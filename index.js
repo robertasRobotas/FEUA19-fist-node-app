@@ -1,11 +1,19 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import mongoose from "mongoose";
 import tasksRouter from "./src/routes/task.js";
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+mongoose
+  .connect(process.env.MONGO_CONNECTION)
+  .then(() => console.log("Connected to DB!"))
+  .catch((err) => {
+    console.log(err);
+  });
 
 app.use(tasksRouter);
 
