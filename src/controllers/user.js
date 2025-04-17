@@ -17,10 +17,11 @@ const SIGN_UP = async (req, res) => {
   };
 
   const respose = await new UserModel(user);
-  respose.save();
+  const createdUser = await respose.save();
 
   res.status(200).json({
     message: "Sign in successfully",
+    user: createdUser,
   });
 };
 

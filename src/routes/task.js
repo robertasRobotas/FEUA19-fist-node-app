@@ -8,12 +8,13 @@ import {
   LOG_INFO,
   UPDATE_TASK_BY_ID,
 } from "../controllers/task.js";
+import auth from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.post("/tasks", INSERT_TASK);
+router.post("/tasks", auth, INSERT_TASK);
 
-router.get("/tasks", GET_TASKS);
+router.get("/tasks", auth, GET_TASKS);
 
 router.get("/tasks/:id", GET_TASK_BY_ID);
 
