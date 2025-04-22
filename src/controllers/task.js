@@ -5,6 +5,7 @@ const INSERT_TASK = async (req, res) => {
   try {
     const task = new TaskModel({
       id: uuidv4(),
+      userId: req.body.userId,
       title: req.body.title,
       isCompleted: false,
       createdAt: new Date(),
@@ -27,7 +28,7 @@ const INSERT_TASK = async (req, res) => {
 
 const GET_TASKS = async (req, res) => {
   try {
-    const response = await TaskModel.find();
+    const response = await TaskModel.find({ userId: req.body.userId });
 
     return res.status(200).json({
       tasks: response,
@@ -44,6 +45,20 @@ const GET_TASKS = async (req, res) => {
 
 const GET_TASK_BY_ID = async (req, res) => {
   try {
+    const task = await TaskModel.findOne({ id: req.params.id });
+
+    if (!task) {
+      return res.status(404).json({
+        message: "This task does not exist",
+      });
+    }
+
+    if (task.userId !== req.body.userId) {
+      return res.status(403).json({
+        message: "This task does not belong to you",
+      });
+    }
+
     const response = await TaskModel.findOne({ id: req.params.id });
 
     if (!response) {
@@ -65,23 +80,22 @@ const GET_TASK_BY_ID = async (req, res) => {
   }
 };
 
-const REMOVE_ALL_TASKS = (req, res) => {
-  try {
-    return res.status(200).json({
-      message: "oh no, you deleted my db, I am going to be fired ;''''((((((",
-    });
-  } catch (err) {
-    console.log("We have some problems");
-    console.log(err);
-
-    return res.status(400).json({
-      message: "we have some problems",
-    });
-  }
-};
-
 const REMOVE_TASK_BY_ID = async (req, res) => {
   try {
+    const task = await TaskModel.findOne({ id: req.params.id });
+
+    if (!task) {
+      return res.status(404).json({
+        message: "This task does not exist",
+      });
+    }
+
+    if (task.userId !== req.body.userId) {
+      return res.status(403).json({
+        message: "This task does not belong to you",
+      });
+    }
+
     const response = await TaskModel.deleteOne({ id: req.params.id });
 
     return res.status(200).json({
@@ -98,16 +112,22 @@ const REMOVE_TASK_BY_ID = async (req, res) => {
   }
 };
 
-const LOG_INFO = (req, res) => {
-  console.log(req.query.name);
-
-  return res.status(200).json({
-    message: "Test",
-  });
-};
-
 const UPDATE_TASK_BY_ID = async (req, res) => {
   try {
+    const task = await TaskModel.findOne({ id: req.params.id });
+
+    if (!task) {
+      return res.status(404).json({
+        message: "This task does not exist",
+      });
+    }
+
+    if (task.userId !== req.body.userId) {
+      return res.status(403).json({
+        message: "This task does not belong to you",
+      });
+    }
+
     const response = await TaskModel.findOneAndUpdate(
       { id: req.params.id },
       { ...req.body },
@@ -132,8 +152,6 @@ export {
   INSERT_TASK,
   GET_TASKS,
   GET_TASK_BY_ID,
-  REMOVE_ALL_TASKS,
   REMOVE_TASK_BY_ID,
-  LOG_INFO,
   UPDATE_TASK_BY_ID,
 };
