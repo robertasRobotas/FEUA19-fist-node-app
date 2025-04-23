@@ -12,7 +12,7 @@ import auth from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.post("/tasks", validate(createTaskSchema), auth, INSERT_TASK);
+router.post("/tasks", auth, validate(createTaskSchema), INSERT_TASK);
 
 router.get("/tasks", auth, GET_TASKS);
 
